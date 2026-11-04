@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Move – Decentralized Transport Booking on BOT Chain</title>
+  <meta name="description" content="Book transport anywhere. Pay with BOT or USDT. All records on-chain." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-inner">
+      <a href="#" class="logo" onclick="showSection('landing')">
+        <span class="logo-mark">M</span>
+        <span class="logo-text">Move</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#search" onclick="showSection('landing');scrollToId('search')">Search</a></li>
+        <li><a href="#how" onclick="showSection('landing');scrollToId('how')">How it works</a></li>
+        <li><a href="#operators" onclick="showSection('landing');scrollToId('operators')">Operators</a></li>
+        <li><a href="#features" onclick="showSection('landing');scrollToId('features')">Features</a></li>
+        <li><a href="#faq" onclick="showSection('landing');scrollToId('faq')">FAQ</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="btn btn-ghost" id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+        <button class="btn btn-primary hidden" id="dashboardBtn" onclick="openDashboard()">Dashboard</button>
+        <button class="menu-btn" id="menuToggle" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===================== LANDING ===================== -->
+  <div id="landingSection">
+    <header class="hero">
+      <div class="hero-glow"></div>
+      <div class="container hero-content">
+        <div class="pill">Built on BOT Chain</div>
+        <h1>Move anywhere.<br/><span>Pay onchain.</span></h1>
+        <p class="hero-lead">The global decentralized transport booking platform. Search routes, book seats, and settle with BOT or USDT — every record lives permanently on BOT Chain.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-lg" onclick="scrollToId('search')">Find a ride</button>
+          <button class="btn btn-outline btn-lg" onclick="connectWallet()">Connect Wallet</button>
+        </div>
+        <div class="hero-metrics">
+          <div><strong>0.75s</strong><span>Block time</span></div>
+          <div><strong>On-chain</strong><span>Records</span></div>
+          <div><strong>BOT + USDT</strong><span>Payments</span></div>
+          <div><strong>Global</strong><span>Anyone, anywhere</span></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Search -->
+    <section class="section search-wrap" id="search">
+      <div class="container">
+        <div class="search-panel">
+          <h2>Where are you going?</h2>
+          <p class="muted">Search any origin and destination. Availability is verified on-chain.</p>
+          <div class="search-row">
+            <div class="field">
+              <label>From</label>
+              <input type="text" id="searchOrigin" placeholder="e.g. Lagos, London, Nairobi…" list="cities" />
+            </div>
+            <button class="swap" onclick="swapLocations()" title="Swap">⇄</button>
+            <div class="field">
+              <label>To</label>
+              <input type="text" id="searchDestination" placeholder="e.g. Accra, Berlin, Dubai…" list="cities" />
+            </div>
+            <button class="btn btn-primary" onclick="searchRoutes()">Search</button>
+          </div>
+          <datalist id="cities">
+            <option value="Lagos"><option value="Ibadan"><option value="Abuja"><option value="Accra">
+            <option value="Nairobi"><option value="Johannesburg"><option value="Cairo"><option value="London">
+            <option value="Berlin"><option value="Paris"><option value="Dubai"><option value="Singapore">
+            <option value="New York"><option value="Toronto"><option value="São Paulo">
+          </datalist>
+          <div id="searchResults" class="results"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Popular -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">Popular corridors</h2>
+        <p class="section-sub">High-demand routes operators are already serving</p>
+        <div class="corridor-grid">
+          <button class="corridor" onclick="quickSearch('Lagos','Accra')">Lagos → Accra</button>
+          <button class="corridor" onclick="quickSearch('Nairobi','Mombasa')">Nairobi → Mombasa</button>
+          <button class="corridor" onclick="quickSearch('London','Manchester')">London → Manchester</button>
+          <button class="corridor" onclick="quickSearch('Dubai','Abu Dhabi')">Dubai → Abu Dhabi</button>
+          <button class="corridor" onclick="quickSearch('Johannesburg','Cape Town')">Johannesburg → Cape Town</button>
+          <button class="corridor" onclick="quickSearch('Berlin','Munich')">Berlin → Munich</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section alt" id="how">
+      <div class="container">
+        <h2 class="section-title">How it works</h2>
+        <div class="steps">
+          <div class="step">
+            <span class="step-num">01</span>
+            <h3>Connect</h3>
+            <p>Link any BOT Chain wallet. We validate the network automatically.</p>
+          </div>
+          <div class="step">
+            <span class="step-num">02</span>
+            <h3>Search</h3>
+            <p>Enter origin and destination. Compare fares, seats, times and operators.</p>
+          </div>
+          <div class="step">
+            <span class="step-num">03</span>
+            <h3>Book & pay</h3>
+            <p>Select seats and pay with BOT or USDT. The booking is locked on-chain.</p>
+          </div>
+          <div class="step">
+            <span class="step-num">04</span>
+            <h3>Travel</h3>
+            <p>Show your booking QR at boarding. Leave an on-chain review after the trip.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Operators -->
+    <section class="section dark" id="operators">
+      <div class="container">
+        <h2 class="section-title light">For transport operators</h2>
+        <p class="section-sub light">Register once. Publish routes. Get paid directly to your wallet.</p>
+        <div class="ops-grid">
+          <div class="ops-card">
+            <div class="ops-icon">🏢</div>
+            <h4>Company profile</h4>
+            <p>Create a verified operator identity with contact details.</p>
+          </div>
+          <div class="ops-card">
+            <div class="ops-icon">🚐</div>
+            <h4>Fleet</h4>
+            <p>Register vehicles and set seat capacity.</p>
+          </div>
+          <div class="ops-card">
+            <div class="ops-icon">🛣️</div>
+            <h4>Routes & schedules</h4>
+            <p>Publish any origin–destination with fares in BOT and USDT.</p>
+          </div>
+          <div class="ops-card">
+            <div class="ops-icon">💸</div>
+            <h4>Instant settlement</h4>
+            <p>Receive net fare minus a small platform fee in the same transaction.</p>
+          </div>
+        </div>
+        <div class="center mt">
+          <button class="btn btn-primary" onclick="connectWallet()">Become an operator</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section" id="features">
+      <div class="container">
+        <h2 class="section-title">Why Move</h2>
+        <div class="feat-grid">
+          <div class="feat">
+            <div class="feat-icon">🌍</div>
+            <h3>Global by design</h3>
+            <p>Any origin, any destination. No regional lock-in.</p>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">🔗</div>
+            <h3>Fully on-chain</h3>
+            <p>Bookings, payments, cancellations and reviews live permanently on BOT Chain.</p>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">💳</div>
+            <h3>BOT & USDT</h3>
+            <p>Pay with native BOT or USDT. Automatic fee split and operator payout.</p>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">🎟️</div>
+            <h3>Seat locking</h3>
+            <p>Smart contracts enforce capacity and prevent double-booking.</p>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">↩️</div>
+            <h3>Fair cancellations</h3>
+            <p>Cancel ≥2 hours before departure and receive a 90% refund automatically.</p>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">⭐</div>
+            <h3>On-chain reputation</h3>
+            <p>Passengers leave ratings that stay linked to routes and operators forever.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section alt" id="faq">
+      <div class="container narrow">
+        <h2 class="section-title">FAQ</h2>
+        <div class="faq">
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">What is Move?</button>
+            <div class="faq-a">Move is a decentralized transport discovery and booking platform on BOT Chain. Anyone can search routes, book seats and pay with BOT or USDT. Operators publish schedules and receive settlements directly on-chain.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">Who can use it?</button>
+            <div class="faq-a">Anyone, anywhere. There is no regional restriction. Passengers and operators from any city or country can participate as long as they connect a BOT Chain wallet.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">Which wallets work?</button>
+            <div class="faq-a">Any EVM wallet that supports custom networks (MetaMask, BO Wallet, Trust Wallet, etc.). You must be on BOT Chain (Chain ID 677).</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">How do payments work?</button>
+            <div class="faq-a">Choose BOT or USDT at booking. The contract takes a small platform fee and sends the rest to the operator in the same transaction. Everything is visible on the BOT Chain explorer.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">Can I cancel?</button>
+            <div class="faq-a">Yes, if the departure is more than 2 hours away. You automatically receive a 90% refund; 10% is kept as a cancellation fee.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">How do I become an operator?</button>
+            <div class="faq-a">Connect your wallet, register a company in the Operator Dashboard, add vehicles, then publish routes. An admin can later verify your account for full publishing rights.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===================== PASSENGER DASHBOARD ===================== -->
+  <div id="passengerDashboard" class="dashboard hidden">
+    <div class="dash-top">
+      <div class="container dash-top-inner">
+        <h2>Passenger</h2>
+        <div class="wallet-chip">
+          <span id="passengerAddress"></span>
+          <button class="btn btn-sm btn-ghost" onclick="disconnectWallet()">Disconnect</button>
+        </div>
+      </div>
+    </div>
+    <div class="container dash-body">
+      <div class="tabs">
+        <button class="tab active" data-tab="p-search" onclick="switchTab(this)">Search & Book</button>
+        <button class="tab" data-tab="p-bookings" onclick="switchTab(this)">My Bookings</button>
+        <button class="tab" data-tab="p-history" onclick="switchTab(this)">History</button>
+      </div>
+      <div id="p-search" class="tab-pane active">
+        <div class="search-panel compact">
+          <div class="search-row">
+            <div class="field"><label>From</label><input type="text" id="pOrigin" placeholder="Origin" /></div>
+            <div class="field"><label>To</label><input type="text" id="pDestination" placeholder="Destination" /></div>
+            <button class="btn btn-primary" onclick="passengerSearch()">Search</button>
+          </div>
+        </div>
+        <div id="pSearchResults" class="results"></div>
+      </div>
+      <div id="p-bookings" class="tab-pane">
+        <div id="activeBookings" class="results"><p class="empty">No active bookings yet.</p></div>
+      </div>
+      <div id="p-history" class="tab-pane">
+        <div id="travelHistory" class="results"><p class="empty">Past trips appear here.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== OPERATOR DASHBOARD ===================== -->
+  <div id="operatorDashboard" class="dashboard hidden">
+    <div class="dash-top">
+      <div class="container dash-top-inner">
+        <h2>Operator</h2>
+        <div class="wallet-chip">
+          <span id="operatorAddress"></span>
+          <span id="operatorStatus" class="badge"></span>
+          <button class="btn btn-sm btn-ghost" onclick="disconnectWallet()">Disconnect</button>
+        </div>
+      </div>
+    </div>
+    <div class="container dash-body">
+      <div class="tabs">
+        <button class="tab active" data-tab="o-profile" onclick="switchTab(this)">Profile</button>
+        <button class="tab" data-tab="o-vehicles" onclick="switchTab(this)">Vehicles</button>
+        <button class="tab" data-tab="o-routes" onclick="switchTab(this)">Routes</button>
+        <button class="tab" data-tab="o-bookings" onclick="switchTab(this)">Bookings</button>
+      </div>
+
+      <div id="o-profile" class="tab-pane active">
+        <div class="card" id="registerOperatorForm">
+          <h3>Register your company</h3>
+          <div class="form-grid">
+            <div class="field"><label>Company name</label><input id="opCompanyName" placeholder="Your company" /></div>
+            <div class="field"><label>Phone</label><input id="opPhone" placeholder="+..." /></div>
+            <div class="field"><label>Email</label><input id="opEmail" type="email" placeholder="ops@company.com" /></div>
+            <div class="field"><label>Logo URI (optional)</label><input id="opLogo" placeholder="ipfs:// or https://" /></div>
+          </div>
+          <button class="btn btn-primary" onclick="registerOperator()">Register</button>
+        </div>
+        <div class="card hidden" id="operatorProfileView">
+          <h3>Your profile</h3>
+          <div id="opProfileDetails"></div>
+        </div>
+      </div>
+
+      <div id="o-vehicles" class="tab-pane">
+        <div class="card">
+          <h3>Add vehicle</h3>
+          <div class="form-grid">
+            <div class="field"><label>Plate</label><input id="vehPlate" placeholder="ABC-123" /></div>
+            <div class="field"><label>Type</label>
+              <select id="vehType"><option>Bus</option><option>MiniBus</option><option>Van</option><option>Car</option><option>Coach</option></select>
+            </div>
+            <div class="field"><label>Model</label><input id="vehModel" placeholder="Model name" /></div>
+            <div class="field"><label>Seats</label><input id="vehSeats" type="number" min="1" max="100" value="14" /></div>
+          </div>
+          <button class="btn btn-primary" onclick="registerVehicle()">Add vehicle</button>
+        </div>
+        <div id="vehicleList" class="results mt"></div>
+      </div>
+
+      <div id="o-routes" class="tab-pane">
+        <div class="card">
+          <h3>Publish route</h3>
+          <div class="form-grid">
+            <div class="field"><label>Vehicle ID</label><input id="routeVehicleId" type="number" placeholder="1" /></div>
+            <div class="field"><label>Origin</label><input id="routeOrigin" placeholder="City or place" /></div>
+            <div class="field"><label>Destination</label><input id="routeDestination" placeholder="City or place" /></div>
+            <div class="field"><label>Departure</label><input id="routeDeparture" type="datetime-local" /></div>
+            <div class="field"><label>Duration (min)</label><input id="routeDuration" type="number" value="120" /></div>
+            <div class="field"><label>Fare BOT</label><input id="routeFareBOT" type="number" step="0.01" placeholder="5.0" /></div>
+            <div class="field"><label>Fare USDT</label><input id="routeFareUSDT" type="number" step="0.01" placeholder="3.5" /></div>
+            <div class="field full"><label>Notes</label><input id="routeInfo" placeholder="AC, WiFi, luggage…" /></div>
+          </div>
+          <button class="btn btn-primary" onclick="createRoute()">Publish</button>
+        </div>
+        <div id="routeList" class="results mt"></div>
+      </div>
+
+      <div id="o-bookings" class="tab-pane">
+        <div id="operatorBookings" class="results"><p class="empty">Bookings for your routes will appear here.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== ADMIN ===================== -->
+  <div id="adminDashboard" class="dashboard hidden">
+    <div class="dash-top">
+      <div class="container dash-top-inner">
+        <h2>Admin</h2>
+        <div class="wallet-chip">
+          <span id="adminAddress"></span>
+          <button class="btn btn-sm btn-ghost" onclick="disconnectWallet()">Disconnect</button>
+        </div>
+      </div>
+    </div>
+    <div class="container dash-body">
+      <div class="card">
+        <h3>Verify operator</h3>
+        <div class="form-grid">
+          <div class="field"><label>Operator ID</label><input id="verifyOpId" type="number" /></div>
+          <div class="field"><label>Verified</label>
+            <select id="verifyOpStatus"><option value="true">Yes</option><option value="false">No</option></select>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="verifyOperator()">Update</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking modal -->
+  <div id="bookingModal" class="modal hidden">
+    <div class="modal-box">
+      <button class="modal-x" onclick="closeModal()">×</button>
+      <h3>Confirm booking</h3>
+      <div id="bookingSummary" class="summary"></div>
+      <div class="field"><label>Full name</label><input id="bookName" placeholder="As on ID" /></div>
+      <div class="field"><label>Phone</label><input id="bookPhone" placeholder="+..." /></div>
+      <div class="field"><label>Seats</label><input id="bookSeats" type="number" min="1" value="1" /></div>
+      <div class="field"><label>Pay with</label>
+        <select id="bookPayment"><option value="BOT">BOT</option><option value="USDT">USDT</option></select>
+      </div>
+      <div id="bookingTotal" class="total"></div>
+      <button class="btn btn-primary btn-block" id="confirmBookBtn" onclick="confirmBooking()">Confirm & Pay</button>
+      <div id="bookingStatus" class="status"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <div class="logo"><span class="logo-mark">M</span> Move</div>
+        <p class="muted small">Global decentralized transport booking on BOT Chain.</p>
+      </div>
+      <div>
+        <h4>Platform</h4>
+        <a href="#search" onclick="showSection('landing')">Search</a>
+        <a href="#how" onclick="showSection('landing')">How it works</a>
+        <a href="#faq" onclick="showSection('landing')">FAQ</a>
+      </div>
+      <div>
+        <h4>BOT Chain</h4>
+        <a href="https://botchain.ai" target="_blank" rel="noopener">Website</a>
+        <a href="https://scan.botchain.ai" target="_blank" rel="noopener">Explorer</a>
+        <a href="https://dev-docs.botchain.ai" target="_blank" rel="noopener">Docs</a>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <a href="#" onclick="downloadWhitepaper()">Whitepaper</a>
+        <a href="https://wallet.botchain.ai" target="_blank" rel="noopener">BO Wallet</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">© 2026 Move · Built on BOT Chain · All records on-chain</div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
