@@ -39,7 +39,7 @@
     <header class="hero">
       <div class="hero-glow"></div>
       <div class="container hero-content">
-        <div class="pill">Built on BOT Chain</div>
+        <div class="pill">Built on BOT Chain · Testnet</div>
         <h1>Move anywhere.<br/><span>Pay onchain.</span></h1>
         <p class="hero-lead">The global decentralized transport booking platform. Search routes, book seats, and settle with BOT or USDT — every record lives permanently on BOT Chain.</p>
         <div class="hero-actions">
@@ -60,7 +60,7 @@
       <div class="container">
         <div class="search-panel">
           <h2>Where are you going?</h2>
-          <p class="muted">Search any origin and destination. Availability is verified on-chain.</p>
+          <p class="muted">Search any origin and destination. Availability is read live from BOT Chain.</p>
           <div class="search-row">
             <div class="field">
               <label>From</label>
@@ -138,7 +138,7 @@
           <div class="ops-card">
             <div class="ops-icon">🏢</div>
             <h4>Company profile</h4>
-            <p>Create a verified operator identity with contact details.</p>
+            <p>Create an operator identity with contact details. An admin verifies it before you publish.</p>
           </div>
           <div class="ops-card">
             <div class="ops-icon">🚐</div>
@@ -157,7 +157,7 @@
           </div>
         </div>
         <div class="center mt">
-          <button class="btn btn-primary" onclick="connectWallet()">Become an operator</button>
+          <button class="btn btn-primary" onclick="becomeOperator()">Become an operator</button>
         </div>
       </div>
     </section>
@@ -190,7 +190,7 @@
           <div class="feat">
             <div class="feat-icon">↩️</div>
             <h3>Fair cancellations</h3>
-            <p>Cancel ≥2 hours before departure and receive a 90% refund automatically.</p>
+            <p>Cancel more than 2 hours before departure for a 90% refund.</p>
           </div>
           <div class="feat">
             <div class="feat-icon">⭐</div>
@@ -216,19 +216,19 @@
           </div>
           <div class="faq-item">
             <button class="faq-q" onclick="toggleFaq(this)">Which wallets work?</button>
-            <div class="faq-a">Any EVM wallet that supports custom networks (MetaMask, BO Wallet, Trust Wallet, etc.). You must be on BOT Chain (Chain ID 677).</div>
+            <div class="faq-a">Any EVM wallet that supports custom networks (MetaMask, BO Wallet, Trust Wallet, etc.). Move currently runs on BOT Chain Testnet (Chain ID 968) — the app adds the network for you.</div>
           </div>
           <div class="faq-item">
             <button class="faq-q" onclick="toggleFaq(this)">How do payments work?</button>
-            <div class="faq-a">Choose BOT or USDT at booking. The contract takes a small platform fee and sends the rest to the operator in the same transaction. Everything is visible on the BOT Chain explorer.</div>
+            <div class="faq-a">Choose BOT or USDT at booking (whichever the operator accepts for that route). The contract keeps a small platform fee and sends the rest to the operator in the same transaction. Everything is visible on the BOT Chain explorer.</div>
           </div>
           <div class="faq-item">
             <button class="faq-q" onclick="toggleFaq(this)">Can I cancel?</button>
-            <div class="faq-a">Yes, if the departure is more than 2 hours away. You automatically receive a 90% refund; 10% is kept as a cancellation fee.</div>
+            <div class="faq-a">Yes, if the departure is more than 2 hours away. You receive a 90% refund; 10% is kept as a cancellation fee.</div>
           </div>
           <div class="faq-item">
             <button class="faq-q" onclick="toggleFaq(this)">How do I become an operator?</button>
-            <div class="faq-a">Connect your wallet, register a company in the Operator Dashboard, add vehicles, then publish routes. An admin can later verify your account for full publishing rights.</div>
+            <div class="faq-a">Connect your wallet, open the Operator portal, register your company and add vehicles. An admin must verify your account before you can publish routes.</div>
           </div>
         </div>
       </div>
@@ -242,6 +242,7 @@
         <h2>Passenger</h2>
         <div class="wallet-chip">
           <span id="passengerAddress"></span>
+          <button class="btn btn-sm btn-ghost" onclick="openOperatorPortal()">Operator portal</button>
           <button class="btn btn-sm btn-ghost" onclick="disconnectWallet()">Disconnect</button>
         </div>
       </div>
@@ -255,8 +256,8 @@
       <div id="p-search" class="tab-pane active">
         <div class="search-panel compact">
           <div class="search-row">
-            <div class="field"><label>From</label><input type="text" id="pOrigin" placeholder="Origin" /></div>
-            <div class="field"><label>To</label><input type="text" id="pDestination" placeholder="Destination" /></div>
+            <div class="field"><label>From</label><input type="text" id="pOrigin" placeholder="Origin" list="cities" /></div>
+            <div class="field"><label>To</label><input type="text" id="pDestination" placeholder="Destination" list="cities" /></div>
             <button class="btn btn-primary" onclick="passengerSearch()">Search</button>
           </div>
         </div>
@@ -279,6 +280,7 @@
         <div class="wallet-chip">
           <span id="operatorAddress"></span>
           <span id="operatorStatus" class="badge"></span>
+          <button class="btn btn-sm btn-ghost hidden" id="backToPassengerBtn" onclick="openPassengerView()">Passenger view</button>
           <button class="btn btn-sm btn-ghost" onclick="disconnectWallet()">Disconnect</button>
         </div>
       </div>
@@ -294,6 +296,7 @@
       <div id="o-profile" class="tab-pane active">
         <div class="card" id="registerOperatorForm">
           <h3>Register your company</h3>
+          <p class="muted small">Contact details are stored publicly on-chain.</p>
           <div class="form-grid">
             <div class="field"><label>Company name</label><input id="opCompanyName" placeholder="Your company" /></div>
             <div class="field"><label>Phone</label><input id="opPhone" placeholder="+..." /></div>
@@ -327,14 +330,15 @@
       <div id="o-routes" class="tab-pane">
         <div class="card">
           <h3>Publish route</h3>
+          <p class="muted small" id="routeVerifyNote"></p>
           <div class="form-grid">
-            <div class="field"><label>Vehicle ID</label><input id="routeVehicleId" type="number" placeholder="1" /></div>
-            <div class="field"><label>Origin</label><input id="routeOrigin" placeholder="City or place" /></div>
-            <div class="field"><label>Destination</label><input id="routeDestination" placeholder="City or place" /></div>
+            <div class="field"><label>Vehicle</label><select id="routeVehicleId"><option value="">Add a vehicle first</option></select></div>
+            <div class="field"><label>Origin</label><input id="routeOrigin" placeholder="City or place" list="cities" /></div>
+            <div class="field"><label>Destination</label><input id="routeDestination" placeholder="City or place" list="cities" /></div>
             <div class="field"><label>Departure</label><input id="routeDeparture" type="datetime-local" /></div>
-            <div class="field"><label>Duration (min)</label><input id="routeDuration" type="number" value="120" /></div>
-            <div class="field"><label>Fare BOT</label><input id="routeFareBOT" type="number" step="0.01" placeholder="5.0" /></div>
-            <div class="field"><label>Fare USDT</label><input id="routeFareUSDT" type="number" step="0.01" placeholder="3.5" /></div>
+            <div class="field"><label>Duration (min)</label><input id="routeDuration" type="number" min="1" value="120" /></div>
+            <div class="field"><label>Fare BOT (blank = not accepted)</label><input id="routeFareBOT" type="number" step="0.0001" min="0" placeholder="5.0" /></div>
+            <div class="field"><label>Fare USDT (blank = not accepted)</label><input id="routeFareUSDT" type="number" step="0.01" min="0" placeholder="3.5" /></div>
             <div class="field full"><label>Notes</label><input id="routeInfo" placeholder="AC, WiFi, luggage…" /></div>
           </div>
           <button class="btn btn-primary" onclick="createRoute()">Publish</button>
@@ -361,14 +365,23 @@
     </div>
     <div class="container dash-body">
       <div class="card">
-        <h3>Verify operator</h3>
+        <h3>Platform</h3>
+        <div id="adminInfo"><p class="empty">Loading…</p></div>
+      </div>
+      <div class="card mt">
+        <h3>Operators</h3>
+        <div id="adminOperators" class="results"><p class="empty">Loading…</p></div>
+      </div>
+      <div class="card mt">
+        <h3>Withdraw platform fees</h3>
+        <p class="muted small">The contract pays cancellation refunds from this same balance. Leave enough for refunds.</p>
         <div class="form-grid">
-          <div class="field"><label>Operator ID</label><input id="verifyOpId" type="number" /></div>
-          <div class="field"><label>Verified</label>
-            <select id="verifyOpStatus"><option value="true">Yes</option><option value="false">No</option></select>
+          <div class="field"><label>Token</label>
+            <select id="feeToken"><option value="BOT">BOT</option><option value="USDT">USDT</option></select>
           </div>
+          <div class="field"><label>Amount</label><input id="feeAmount" type="number" step="any" min="0" placeholder="0.0" /></div>
         </div>
-        <button class="btn btn-primary" onclick="verifyOperator()">Update</button>
+        <button class="btn btn-primary" onclick="withdrawFees()">Withdraw to owner</button>
       </div>
     </div>
   </div>
@@ -381,6 +394,7 @@
       <div id="bookingSummary" class="summary"></div>
       <div class="field"><label>Full name</label><input id="bookName" placeholder="As on ID" /></div>
       <div class="field"><label>Phone</label><input id="bookPhone" placeholder="+..." /></div>
+      <p class="muted small">Name and phone are stored on-chain and visible to anyone.</p>
       <div class="field"><label>Seats</label><input id="bookSeats" type="number" min="1" value="1" /></div>
       <div class="field"><label>Pay with</label>
         <select id="bookPayment"><option value="BOT">BOT</option><option value="USDT">USDT</option></select>
@@ -399,6 +413,7 @@
       <div>
         <div class="logo"><span class="logo-mark">M</span> Move</div>
         <p class="muted small">Global decentralized transport booking on BOT Chain.</p>
+        <p class="muted small">Contract: <a id="contractLink" target="_blank" rel="noopener"></a></p>
       </div>
       <div>
         <h4>Platform</h4>
@@ -409,7 +424,7 @@
       <div>
         <h4>BOT Chain</h4>
         <a href="https://botchain.ai" target="_blank" rel="noopener">Website</a>
-        <a href="https://scan.botchain.ai" target="_blank" rel="noopener">Explorer</a>
+        <a href="https://scan.bohr.life" target="_blank" rel="noopener">Testnet Explorer</a>
         <a href="https://dev-docs.botchain.ai" target="_blank" rel="noopener">Docs</a>
       </div>
       <div>
