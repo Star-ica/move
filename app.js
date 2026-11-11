@@ -4,15 +4,15 @@
  */
 
 const BOT_CHAIN = {
-  chainId: 968,
-  chainIdHex: '0x3c8',
+  chainId: 677,
+  chainIdHex: '0x2a5',
   name: 'BOT Chain Testnet',
-  rpcUrl: 'https://rpc.bohr.life',
-  explorer: 'https://scan.bohr.life',
+  rpcUrl: 'https://rpc.botchain.ai',
+  explorer: 'https://scan.botchain.ai',
   nativeCurrency: { name: 'BOT', symbol: 'BOT', decimals: 18 }
 };
 
-const CONTRACT_ADDRESS = '0x13B45FEA3a0866cA298bb4d4498DB6752ab8e6F0';
+const CONTRACT_ADDRESS = '0x4fF1955C83cdE599baAFBfd0a2408B640646Dfa2';
 
 const CONTRACT_ABI = [
   "function owner() view returns (address)",
